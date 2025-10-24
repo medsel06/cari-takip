@@ -1,0 +1,192 @@
+/* Dashboard-specific responsive styles */
+
+/* Firma ismi için responsive text boyutları */
+.company-name {
+  @apply font-medium text-gray-900 dark:text-white truncate transition-colors;
+  @apply text-sm lg:text-base;
+}
+
+/* Tutar için responsive boyutlar */
+.amount-display {
+  @apply font-bold text-right whitespace-nowrap;
+  @apply text-sm lg:text-base;
+}
+
+.amount-positive {
+  @apply text-green-600;
+}
+
+.amount-negative {
+  @apply text-red-600;
+}
+
+.amount-neutral {
+  @apply text-blue-600;
+}
+
+/* Dashboard kartları için responsive padding */
+.dashboard-card {
+  @apply bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700;
+  @apply p-4 lg:p-6;
+}
+
+/* Mobile-first balance item layout */
+.balance-item {
+  @apply flex items-center justify-between p-3 rounded-lg;
+  @apply hover:bg-gray-50 dark:hover:bg-gray-700;
+  @apply cursor-pointer transition-all duration-200;
+}
+
+/* Group class needs to be added separately in components */
+.balance-item.group:hover .company-name {
+  @apply text-blue-600;
+}
+
+.balance-item-content {
+  @apply flex-1 min-w-0 pr-3;
+}
+
+.balance-item-amount {
+  @apply flex-shrink-0;
+}
+
+/* Responsive grid helper classes */
+.dashboard-grid-mobile {
+  @apply grid grid-cols-2 gap-3;
+}
+
+.dashboard-grid-desktop {
+  @apply hidden md:grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4;
+}
+
+/* Typography responsive classes */
+.heading-responsive {
+  @apply text-base lg:text-lg font-semibold text-gray-900 dark:text-white;
+}
+
+.subheading-responsive {
+  @apply text-xs lg:text-sm text-gray-500 dark:text-gray-400;
+}
+
+.amount-large-responsive {
+  @apply text-2xl lg:text-3xl font-bold break-words;
+}
+
+.amount-small-responsive {
+  @apply text-xs lg:text-sm font-semibold;
+}
+
+/* Icon responsive sizing */
+.icon-responsive {
+  @apply h-4 w-4 lg:h-5 lg:w-5;
+}
+
+.icon-small-responsive {
+  @apply h-3 w-3 lg:h-4 lg:w-4;
+}
+
+/* Button responsive styling */
+.button-responsive {
+  @apply w-full py-2 font-medium transition-colors rounded-lg;
+  @apply text-xs lg:text-sm;
+}
+
+/* Prevent text overflow on small screens */
+.text-truncate-responsive {
+  @apply truncate text-sm lg:text-base;
+}
+
+/* Mobile summary card specific styles */
+.mobile-summary-grid {
+  @apply grid grid-cols-2 gap-3 mb-4;
+}
+
+.mobile-summary-item {
+  @apply text-center p-3 rounded-lg;
+}
+
+.mobile-summary-label {
+  @apply text-xs font-medium mb-1;
+}
+
+.mobile-summary-value {
+  @apply text-sm font-bold break-words;
+}
+
+.mobile-summary-subtitle {
+  @apply text-xs text-gray-500 mt-1;
+}
+
+/* Activity feed responsive */
+.activity-item {
+  @apply flex items-start gap-3 p-3 rounded-lg;
+  @apply hover:bg-gray-50 dark:hover:bg-gray-700;
+  @apply cursor-pointer transition-colors;
+}
+
+.activity-icon {
+  @apply p-2 rounded-lg;
+}
+
+.activity-content {
+  @apply flex-1 min-w-0;
+}
+
+.activity-title {
+  @apply text-sm font-medium text-gray-900 dark:text-white;
+}
+
+.activity-description {
+  @apply text-xs text-gray-500 dark:text-gray-400;
+}
+
+.activity-time {
+  @apply text-xs text-gray-400;
+}
+
+/* Hover effects for interactive elements */
+.interactive-hover {
+  @apply transition-all duration-200;
+  @apply hover:bg-gray-50 dark:hover:bg-gray-700;
+  @apply hover:shadow-md;
+}
+
+/* Focus states for accessibility */
+.focus-accessible {
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+  @apply dark:focus:ring-offset-gray-800;
+}
+
+/* Loading states */
+.loading-shimmer {
+  @apply animate-pulse bg-gray-200 dark:bg-gray-700 rounded;
+}
+
+/* Media query overrides for very small screens */
+@media (max-width: 375px) {
+  .mobile-summary-value {
+    @apply text-xs;
+  }
+  
+  .company-name {
+    @apply text-xs;
+  }
+  
+  .amount-display {
+    @apply text-xs;
+  }
+}
+
+/* High-DPI display optimizations */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .dashboard-card {
+    @apply border-opacity-60;
+  }
+}
+
+/* Dark mode specific improvements */
+@media (prefers-color-scheme: dark) {
+  .balance-item {
+    @apply border-opacity-20;
+  }
+}
