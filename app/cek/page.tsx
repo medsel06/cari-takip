@@ -10,6 +10,7 @@ import { Check } from '@/lib/types';
 import { formatCurrency, formatDate, checkStatusLabels, checkTypeLabels } from '@/lib/utils';
 import { ColumnDef } from '@tanstack/react-table';
 import { toast } from 'sonner';
+import { logger, getErrorMessage } from '@/lib/logger';
 
 const getCheckStatusLabel = (status: Check['status'], type: Check['type']) => {
   if (type === 'issued') {
@@ -100,8 +101,9 @@ export default function CekPage() {
 
       setChecks(data || []);
     } catch (error: any) {
-      console.error('Error fetching checks:', error);
-      toast.error('Çekler yüklenirken hata oluştu: ' + (error.message || 'Bilinmeyen hata'));
+      logger.error('Error fetching checks:', error);
+      const errorMsg = getErrorMessage(error);
+      toast.error('Çekler yüklenirken hata oluştu: ' + errorMsg);
     } finally {
       setLoading(false);
     }
@@ -130,7 +132,7 @@ export default function CekPage() {
       if (error) throw error;
       setCustomers(data || []);
     } catch (error) {
-      console.error('Error fetching customers:', error);
+      logger.error('Error fetching customers:', error);
     }
   };
 
@@ -189,8 +191,9 @@ export default function CekPage() {
       });
       fetchChecks();
     } catch (error: any) {
-      console.error('Error saving check:', error);
-      toast.error(error.message || 'Çek kaydedilirken hata oluştu');
+      logger.error('Error saving check:', error);
+      const errorMsg = getErrorMessage(error);
+      toast.error(errorMsg || 'Çek kaydedilirken hata oluştu');
     } finally {
       setSaving(false);
     }
