@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState, useCallback, useMemo } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
@@ -11,6 +11,7 @@ import Header from '@/components/layout/header';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import ErrorBoundary from '@/components/ErrorBoundary';
+import { logger } from '@/lib/logger';
 
 interface ClientLayoutProps {
   children: ReactNode;
@@ -22,13 +23,16 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  
+
   // Keyboard shortcuts'ı aktifleştir
   useKeyboardShortcuts();
-  
-  // Auth sayfaları ve public sayfalar
-  const isAuthPage = pathname?.startsWith('/login') || pathname?.startsWith('/register');
-  const isPublicPage = pathname === '/landing';
+
+  // Auth sayfaları ve public sayfalar - memoize for performance
+  const isAuthPage = useMemo(() =>
+    pathname?.startsWith('/login') || pathname?.startsWith('/register'),
+    [pathname]
+  );
+  const isPublicPage = useMemo(() => pathname === '/landing', [pathname]);
   
   useEffect(() => {
     const supabase = createClient();
@@ -52,14 +56,14 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
           router.push('/login');
         }
       } catch (error) {
-        console.error('Auth error:', error);
+        logger.error('Auth error:', error);
       } finally {
         setLoading(false);
       }
     };
-    
+
     checkUser();
-    
+
     // Auth listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_OUT' && !isAuthPage) {
@@ -68,9 +72,14 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
         router.push('/');
       }
     });
-    
+
     return () => subscription.unsubscribe();
   }, [pathname, router, isAuthPage, isPublicPage]);
+
+  // Memoize toggle function
+  const handleToggleSidebar = useCallback(() => {
+    setSidebarCollapsed(prev => !prev);
+  }, []);
   
   if (loading) {
     return (
@@ -118,10 +127,10 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
           {/* Main Content */}
           <div className="flex-1 flex flex-col overflow-hidden">
             {!isAuthPage && !isPublicPage && (
-              <Header 
-                user={user} 
+              <Header
+                user={user}
                 sidebarCollapsed={sidebarCollapsed}
-                onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
+                onToggleSidebar={handleToggleSidebar}
               />
             )}
             
