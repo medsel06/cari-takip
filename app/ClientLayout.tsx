@@ -11,7 +11,6 @@ import Header from '@/components/layout/header';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import ErrorBoundary from '@/components/ErrorBoundary';
-import ToastProvider from '@/components/ToastProvider';
 
 interface ClientLayoutProps {
   children: ReactNode;
@@ -98,7 +97,6 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
   return (
     <ErrorBoundary>
       <ThemeProvider>
-        <ToastProvider />
         <div className="flex h-screen bg-background">
           {/* Sidebar - Auth sayfalarında ve public sayfalarda gizle */}
           {!isAuthPage && !isPublicPage && (
