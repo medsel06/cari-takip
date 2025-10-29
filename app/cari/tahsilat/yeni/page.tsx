@@ -317,6 +317,9 @@ export default function TahsilatOdemePage() {
           .limit(1)
           .maybeSingle();
 
+        console.log('ARANAN HESAP TÜRÜ:', accountType);
+        console.log('BULUNAN HESAP:', defaultAccount);
+
         if (defaultAccount) {
           // Hareket tipini belirle (CREDIT = tahsilat = income, DEBT = ödeme = expense)
           const movementType = formData.movement_type === 'CREDIT' ? 'income' : 'expense';
@@ -337,7 +340,10 @@ export default function TahsilatOdemePage() {
 
           if (cashError) {
             logger.error('Nakit hareketi kaydedilemedi:', cashError);
+            console.error('CASH MOVEMENT ERROR:', cashError);
           } else {
+            console.log('CASH MOVEMENT KAYDEDİLDİ!');
+
             // Hesap bakiyesini güncelle
             const newBalance = defaultAccount.balance +
               (movementType === 'income' ? formData.amount : -formData.amount);
@@ -351,6 +357,7 @@ export default function TahsilatOdemePage() {
           }
         } else {
           logger.warn(`${accountType} türünde aktif hesap bulunamadı`);
+          console.warn(`⚠️ ${accountType} türünde aktif hesap bulunamadı - cash_movements'a kayıt yapılamıyor!`);
         }
       }
 

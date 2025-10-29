@@ -100,7 +100,10 @@ export default function CashPage() {
 
       if (movementsError) {
         logger.error('Hareketler yüklenirken hata:', movementsError)
+        console.error('MOVEMENTS ERROR:', movementsError)
       } else {
+        logger.log('Bulunan hareket sayısı:', movementsData?.length || 0)
+        console.log('MOVEMENTS DATA:', movementsData)
         setRecentMovements(movementsData || [])
       }
 
