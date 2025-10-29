@@ -15,6 +15,7 @@ import {
   PiggyBank
 } from 'lucide-react'
 import type { CashAccount, CashMovement } from '@/lib/types'
+import { logger, getErrorMessage } from '@/lib/logger'
 
 export default function CashPage() {
   const [accounts, setAccounts] = useState<CashAccount[]>([])
@@ -58,7 +59,7 @@ export default function CashPage() {
         .limit(50);
 
       if (accountsError) {
-        console.error('Hesaplar yüklenirken hata:', accountsError)
+        logger.error('Hesaplar yüklenirken hata:', accountsError)
       } else {
         setAccounts(accountsData || [])
         
@@ -98,13 +99,13 @@ export default function CashPage() {
         .limit(10)
 
       if (movementsError) {
-        console.error('Hareketler yüklenirken hata:', movementsError)
+        logger.error('Hareketler yüklenirken hata:', movementsError)
       } else {
         setRecentMovements(movementsData || [])
       }
 
     } catch (error) {
-      console.error('Veri yüklenirken hata:', error)
+      logger.error('Veri yüklenirken hata:', error)
     } finally {
       setLoading(false)
     }
