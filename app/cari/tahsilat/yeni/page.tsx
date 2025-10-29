@@ -8,6 +8,7 @@ import { ArrowLeft, Save, X, DollarSign, FileText, Calendar, Search, CreditCard,
 import { Customer, Check } from '@/lib/types';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { toast } from 'sonner';
+import { logger, getErrorMessage } from '@/lib/logger';
 
 export default function TahsilatOdemePage() {
   const router = useRouter();
@@ -86,7 +87,7 @@ export default function TahsilatOdemePage() {
       if (error) throw error;
       setCustomers(data || []);
     } catch (error) {
-      console.error('Error fetching customers:', error);
+      logger.error('Error fetching customers:', error);
     }
   };
 
@@ -116,7 +117,7 @@ export default function TahsilatOdemePage() {
         .gte('due_date', new Date().toISOString().split('T')[0])
         .order('due_date', { ascending: true });
 
-      if (error) console.log('No available checks found');
+      if (error) logger.log('No available checks found');
       setAvailableChecks(data || []);
     } catch (error) {
       // Sessizce geç, çek olmayabilir
@@ -234,7 +235,7 @@ export default function TahsilatOdemePage() {
             .single();
 
           if (checkError) throw checkError;
-          console.log('Oluşturulan çek:', checkRecord);
+          logger.log('Oluşturulan çek:', checkRecord);
         } else {
           // Mevcut çekleri ciro et
           for (const check of selectedChecks) {
@@ -264,7 +265,7 @@ export default function TahsilatOdemePage() {
                 created_by: user.id
               }]);
 
-            if (endorsementError) console.error('Ciro geçmişi kaydedilemedi:', endorsementError);
+            if (endorsementError) logger.error('Ciro geçmişi kaydedilemedi:', endorsementError);
           }
         }
       }
@@ -300,8 +301,9 @@ export default function TahsilatOdemePage() {
       // Başarılı - cari detayına yönlendir
       router.push(`/cari/${formData.customer_id}`);
     } catch (error: any) {
-      console.error('Error:', error);
-      toast.error(error.message || 'İşlem sırasında hata oluştu');
+      logger.error('Error:', error);
+      const errorMsg = getErrorMessage(error);
+      toast.error(errorMsg || 'İşlem sırasında hata oluştu');
     } finally {
       setLoading(false);
     }

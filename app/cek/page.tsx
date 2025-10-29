@@ -66,7 +66,6 @@ export default function CekPage() {
     try {
       // Önce kullanıcı bilgisini al
       const { data: { user } } = await supabase.auth.getUser();
-      console.log('Kullanıcı:', user);
       if (!user) return;
 
       const { data: userData, error: userError } = await supabase
@@ -75,7 +74,6 @@ export default function CekPage() {
         .eq('id', user.id)
         .single();
 
-      console.log('User data:', userData, 'Error:', userError);
       if (!userData?.company_id) return;
 
       const { data, error } = await supabase
@@ -84,27 +82,26 @@ export default function CekPage() {
           id,
           check_number,
           bank_name,
+          branch_name,
+          account_number,
+          drawer_name,
           amount,
           due_date,
           status,
           type,
+          description,
           customer:customers(name)
         `)
         .eq('company_id', userData.company_id)
         .order('due_date', { ascending: true })
         .limit(200);
 
-      console.log('Çek sorgusu sonucu:', { data, error });
-      
-      if (error) {
-        console.error('Hata detayı:', error);
-        throw error;
-      }
-      
-      console.log('Çekler:', data); // Debug için
+      if (error) throw error;
+
       setChecks(data || []);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching checks:', error);
+      toast.error('Çekler yüklenirken hata oluştu: ' + (error.message || 'Bilinmeyen hata'));
     } finally {
       setLoading(false);
     }
