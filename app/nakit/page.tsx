@@ -90,9 +90,15 @@ export default function CashPage() {
       const { data: movementsData, error: movementsError } = await supabase
         .from('cash_movements')
         .select(`
-          *,
-          account:cash_accounts!account_id(*),
-          customer:customers!customer_id(*)
+          id,
+          movement_type,
+          amount,
+          description,
+          movement_no,
+          created_at,
+          account_id,
+          cash_accounts!account_id(account_name, account_type),
+          customers!customer_id(name)
         `)
         .eq('company_id', userData.company_id)
         .order('created_at', { ascending: false })
@@ -337,7 +343,7 @@ export default function CashPage() {
                           {movement.description || movement.movement_no}
                         </p>
                         <p className="text-sm text-gray-500">
-                          {movement.account?.account_name}
+                          {movement.cash_accounts?.account_name}
                         </p>
                       </div>
                     </div>
