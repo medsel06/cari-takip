@@ -296,8 +296,66 @@ export default function TahsilatOdemePage() {
 
       if (error) throw error;
 
+      // 3. Nakit/Banka/Kart ile ödeme ise cash_movements'a da kaydet
+      if (formData.payment_method === 'cash' ||
+          formData.payment_method === 'transfer' ||
+          formData.payment_method === 'credit_card') {
+
+        // Ödeme tipine göre hesap türünü belirle
+        let accountType = 'cash';
+        if (formData.payment_method === 'transfer') accountType = 'bank';
+        if (formData.payment_method === 'credit_card') accountType = 'pos';
+
+        // İlgili varsayılan nakit hesabını bul
+        const { data: defaultAccount } = await supabase
+          .from('cash_accounts')
+          .select('id, balance')
+          .eq('company_id', userData.company_id)
+          .eq('account_type', accountType)
+          .eq('is_active', true)
+          .order('created_at', { ascending: true })
+          .limit(1)
+          .maybeSingle();
+
+        if (defaultAccount) {
+          // Hareket tipini belirle (CREDIT = tahsilat = income, DEBT = ödeme = expense)
+          const movementType = formData.movement_type === 'CREDIT' ? 'income' : 'expense';
+
+          // cash_movements tablosuna kaydet
+          const { error: cashError } = await supabase
+            .from('cash_movements')
+            .insert([{
+              company_id: userData.company_id,
+              account_id: defaultAccount.id,
+              customer_id: formData.customer_id,
+              movement_type: movementType,
+              amount: formData.amount,
+              description: description,
+              transaction_date: new Date().toISOString().split('T')[0],
+              created_by: user.id
+            }]);
+
+          if (cashError) {
+            logger.error('Nakit hareketi kaydedilemedi:', cashError);
+          } else {
+            // Hesap bakiyesini güncelle
+            const newBalance = defaultAccount.balance +
+              (movementType === 'income' ? formData.amount : -formData.amount);
+
+            await supabase
+              .from('cash_accounts')
+              .update({ balance: newBalance })
+              .eq('id', defaultAccount.id);
+
+            logger.log('Nakit hareketi kaydedildi');
+          }
+        } else {
+          logger.warn(`${accountType} türünde aktif hesap bulunamadı`);
+        }
+      }
+
       toast.success('\u0130\u015flem ba\u015far\u0131yla kaydedildi');
-      
+
       // Başarılı - cari detayına yönlendir
       router.push(`/cari/${formData.customer_id}`);
     } catch (error: any) {

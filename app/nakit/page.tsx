@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { logger } from '@/lib/logger'
 import Link from 'next/link'
 import { 
   Plus, 
@@ -58,7 +59,7 @@ export default function CashPage() {
         .limit(50);
 
       if (accountsError) {
-        console.error('Hesaplar yüklenirken hata:', accountsError)
+        logger.error('Hesaplar yüklenirken hata:', accountsError)
       } else {
         setAccounts(accountsData || [])
         
@@ -98,13 +99,13 @@ export default function CashPage() {
         .limit(10)
 
       if (movementsError) {
-        console.error('Hareketler yüklenirken hata:', movementsError)
+        logger.error('Hareketler yüklenirken hata:', movementsError)
       } else {
         setRecentMovements(movementsData || [])
       }
 
     } catch (error) {
-      console.error('Veri yüklenirken hata:', error)
+      logger.error('Veri yüklenirken hata:', error)
     } finally {
       setLoading(false)
     }
