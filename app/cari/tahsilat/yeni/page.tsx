@@ -295,8 +295,54 @@ export default function TahsilatOdemePage() {
 
       if (error) throw error;
 
-      toast.success('\u0130\u015flem ba\u015far\u0131yla kaydedildi');
-      
+if (error) throw error;
+
+// 3. Nakit/Havale/Kredi Kartı ile ödeme ise cash_movements'a da kaydet
+if (formData.payment_method === 'cash' || 
+    formData.payment_method === 'transfer' || 
+    formData.payment_method === 'credit_card') {
+  
+  // Varsayılan kasa hesabını bul
+  const { data: defaultAccount } = await supabase
+    .from('cash_accounts')
+    .select('id, balance')
+    .eq('company_id', userData.company_id)
+    .eq('account_type', formData.payment_method === 'cash' ? 'cash' : 
+                      formData.payment_method === 'transfer' ? 'bank' : 'pos')
+    .eq('is_active', true)
+    .limit(1)
+    .single();
+
+  if (defaultAccount) {
+    // Cash movement ekle
+    await supabase
+      .from('cash_movements')
+      .insert([{
+        company_id: userData.company_id,
+        account_id: defaultAccount.id,
+        customer_id: formData.customer_id,
+        movement_type: formData.movement_type === 'CREDIT' ? 'income' : 'expense',
+        amount: formData.amount,
+        description: description,
+        movement_date: new Date().toISOString().split('T')[0],
+        currency: 'TRY',
+        exchange_rate: 1,
+        created_by: user.id
+      }]);
+
+    // Hesap bakiyesini güncelle
+    const newBalance = defaultAccount.balance + 
+      (formData.movement_type === 'CREDIT' ? formData.amount : -formData.amount);
+    
+    await supabase
+      .from('cash_accounts')
+      .update({ balance: newBalance })
+      .eq('id', defaultAccount.id);
+  }
+}
+
+toast.success('İşlem başarıyla kaydedildi');
+           
       // Başarılı - cari detayına yönlendir
       router.push(`/cari/${formData.customer_id}`);
     } catch (error: any) {

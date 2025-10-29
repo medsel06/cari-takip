@@ -89,7 +89,8 @@ export default function CekPage() {
           due_date,
           status,
           type,
-          customer:customers(name)
+          customer_id,
+          customers!customer_id(name)
         `)
         .eq('company_id', userData.company_id)
         .order('due_date', { ascending: true })

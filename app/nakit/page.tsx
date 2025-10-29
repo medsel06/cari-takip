@@ -15,6 +15,7 @@ import {
   PiggyBank
 } from 'lucide-react'
 import type { CashAccount, CashMovement } from '@/lib/types'
+import { logger, getErrorMessage } from '@/lib/logger'
 
 export default function CashPage() {
   const [accounts, setAccounts] = useState<CashAccount[]>([])
@@ -58,7 +59,7 @@ export default function CashPage() {
         .limit(50);
 
       if (accountsError) {
-        console.error('Hesaplar yüklenirken hata:', accountsError)
+        logger.error('Hesaplar yüklenirken hata:', accountsError)
       } else {
         setAccounts(accountsData || [])
         
@@ -89,22 +90,28 @@ export default function CashPage() {
       const { data: movementsData, error: movementsError } = await supabase
         .from('cash_movements')
         .select(`
-          *,
-          account:cash_accounts!account_id(*),
-          customer:customers!customer_id(*)
+          id,
+          movement_type,
+          amount,
+          description,
+          movement_no,
+          created_at,
+          account_id,
+          cash_accounts!account_id(account_name, account_type),
+          customers!customer_id(name)
         `)
         .eq('company_id', userData.company_id)
         .order('created_at', { ascending: false })
         .limit(10)
 
       if (movementsError) {
-        console.error('Hareketler yüklenirken hata:', movementsError)
+        logger.error('Hareketler yüklenirken hata:', movementsError)
       } else {
         setRecentMovements(movementsData || [])
       }
 
     } catch (error) {
-      console.error('Veri yüklenirken hata:', error)
+      logger.error('Veri yüklenirken hata:', error)
     } finally {
       setLoading(false)
     }
@@ -336,7 +343,7 @@ export default function CashPage() {
                           {movement.description || movement.movement_no}
                         </p>
                         <p className="text-sm text-gray-500">
-                          {movement.account?.account_name}
+                          {movement.cash_accounts?.account_name}
                         </p>
                       </div>
                     </div>
