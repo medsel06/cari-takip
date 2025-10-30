@@ -9,8 +9,12 @@ const { createClient } = require('@supabase/supabase-js');
 const fs = require('fs');
 const path = require('path');
 
-// .env dosyasını oku
-require('dotenv').config();
+// .env dosyasını oku (varsa)
+try {
+  require('dotenv').config();
+} catch (err) {
+  console.log('⚠️  dotenv bulunamadı, environment variables kullanılacak');
+}
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
