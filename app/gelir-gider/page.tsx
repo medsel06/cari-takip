@@ -356,7 +356,7 @@ export default function GelirGiderPage() {
       accessorKey: 'transaction_date',
       header: 'Tarih',
       cell: ({ row }) => (
-        <div className="text-sm text-gray-900 whitespace-nowrap">
+        <div className="text-xs text-gray-900 whitespace-nowrap">
           {formatDate(row.original.transaction_date)}
         </div>
       ),
@@ -365,21 +365,15 @@ export default function GelirGiderPage() {
       accessorKey: 'type',
       header: 'Tür',
       cell: ({ row }) => (
-        <div className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium whitespace-nowrap ${
+        <div className={`inline-flex items-center justify-center w-7 h-7 rounded ${
           row.original.type === 'income'
             ? 'bg-green-100 text-green-700'
             : 'bg-red-100 text-red-700'
         }`}>
           {row.original.type === 'income' ? (
-            <>
-              <TrendingUp className="h-3 w-3 mr-1" />
-              Gelir
-            </>
+            <TrendingUp className="h-3.5 w-3.5" />
           ) : (
-            <>
-              <TrendingDown className="h-3 w-3 mr-1" />
-              Gider
-            </>
+            <TrendingDown className="h-3.5 w-3.5" />
           )}
         </div>
       ),
@@ -388,17 +382,29 @@ export default function GelirGiderPage() {
       accessorKey: 'category.name',
       header: 'Kategori',
       cell: ({ row }) => (
-        <div className="flex items-center gap-2">
-          <Tag className="h-3.5 w-3.5 text-gray-400" />
-          <span className="text-sm text-gray-900">{row.original.category.name}</span>
-        </div>
+        <span className="text-xs text-gray-900">{row.original.category.name}</span>
       ),
+    },
+    {
+      accessorKey: 'customer.name',
+      header: 'Firma',
+      cell: ({ row }) => {
+        if (!row.original.customer) return <span className="text-xs text-gray-400">-</span>;
+        return (
+          <Link
+            href={`/cari/${row.original.customer.id}`}
+            className="text-xs text-blue-600 hover:text-blue-800 hover:underline whitespace-nowrap"
+          >
+            {row.original.customer.name}
+          </Link>
+        );
+      },
     },
     {
       accessorKey: 'description',
       header: 'Açıklama',
       cell: ({ row }) => (
-        <span className="text-sm text-gray-600 truncate max-w-[200px] block">
+        <span className="text-xs text-gray-600 truncate max-w-[120px] block">
           {row.original.description || '-'}
         </span>
       ),
@@ -407,7 +413,7 @@ export default function GelirGiderPage() {
       accessorKey: 'amount',
       header: 'Tutar',
       cell: ({ row }) => (
-        <div className={`font-semibold text-sm whitespace-nowrap ${
+        <div className={`font-semibold text-xs whitespace-nowrap ${
           row.original.type === 'income' ? 'text-green-600' : 'text-red-600'
         }`}>
           {row.original.type === 'income' ? '+' : '-'}
@@ -421,21 +427,15 @@ export default function GelirGiderPage() {
       cell: ({ row }) => {
         const status = row.original.payment_status;
         return (
-          <div className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium whitespace-nowrap ${
+          <div className={`inline-flex items-center justify-center w-7 h-7 rounded ${
             status === 'paid'
               ? 'bg-green-100 text-green-700'
               : 'bg-yellow-100 text-yellow-700'
           }`}>
             {status === 'paid' ? (
-              <>
-                <CheckCircle className="h-3 w-3 mr-1" />
-                Ödendi
-              </>
+              <CheckCircle className="h-3.5 w-3.5" />
             ) : (
-              <>
-                <Clock className="h-3 w-3 mr-1" />
-                Bekliyor
-              </>
+              <Clock className="h-3.5 w-3.5" />
             )}
           </div>
         );
@@ -445,23 +445,23 @@ export default function GelirGiderPage() {
       id: 'actions',
       header: 'İşlemler',
       cell: ({ row }) => (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <Link
             href={`/gelir-gider/${row.original.id}`}
-            className="p-2 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded transition-colors"
             title="Detayları Görüntüle"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
             </svg>
           </Link>
           <Link
             href={`/gelir-gider/${row.original.id}/duzenle`}
-            className="p-2 text-amber-600 hover:bg-amber-50 rounded-md transition-colors"
+            className="p-1.5 text-amber-600 hover:bg-amber-50 rounded transition-colors"
             title="Düzenle"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
             </svg>
           </Link>
