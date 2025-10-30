@@ -330,8 +330,8 @@ export default function TahsilatOdemePage() {
         console.log('BULUNAN HESAP:', defaultAccount);
 
         if (defaultAccount) {
-          // Hareket tipini belirle (CREDIT = tahsilat = income, DEBT = ödeme = expense)
-          const movementType = formData.movement_type === 'CREDIT' ? 'income' : 'expense';
+          // Hareket tipini belirle (CREDIT = tahsilat = IN, DEBT = ödeme = OUT)
+          const movementType = formData.movement_type === 'CREDIT' ? 'IN' : 'OUT';
 
           // cash_movements tablosuna kaydet
           const { error: cashError } = await supabase
@@ -346,7 +346,7 @@ export default function TahsilatOdemePage() {
               currency: 'TRY',
               exchange_rate: 1,
               description: description,
-              category: movementType === 'income' ? 'customer_collection' : 'customer_payment',
+              category: movementType === 'IN' ? 'customer_collection' : 'customer_payment',
               payment_method: formData.payment_method,
               document_no: documentNo,
               movement_date: new Date().toISOString().split('T')[0],
@@ -361,7 +361,7 @@ export default function TahsilatOdemePage() {
 
             // Hesap bakiyesini güncelle
             const newBalance = defaultAccount.balance +
-              (movementType === 'income' ? formData.amount : -formData.amount);
+              (movementType === 'IN' ? formData.amount : -formData.amount);
 
             await supabase
               .from('cash_accounts')

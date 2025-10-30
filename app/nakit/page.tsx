@@ -148,12 +148,11 @@ export default function CashPage() {
 
   const getMovementIcon = (type: string) => {
     switch (type) {
-      case 'income':
+      case 'IN':
         return <TrendingUp className="w-5 h-5 text-green-600" />
-      case 'expense':
+      case 'OUT':
         return <TrendingDown className="w-5 h-5 text-red-600" />
-      case 'transfer_in':
-      case 'transfer_out':
+      case 'TRANSFER':
         return <ArrowLeftRight className="w-5 h-5 text-blue-600" />
       default:
         return <FileText className="w-5 h-5" />
@@ -346,11 +345,11 @@ export default function CashPage() {
                     </div>
                     <div className="text-right">
                       <p className={`font-semibold ${
-                        movement.movement_type === 'income' || movement.movement_type === 'transfer_in'
-                          ? 'text-green-600' 
+                        movement.movement_type === 'IN'
+                          ? 'text-green-600'
                           : 'text-red-600'
                       }`}>
-                        {movement.movement_type === 'income' || movement.movement_type === 'transfer_in' ? '+' : '-'}
+                        {movement.movement_type === 'IN' ? '+' : '-'}
                         {formatCurrency(movement.amount)}
                       </p>
                       <p className="text-xs text-gray-500">

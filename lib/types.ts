@@ -154,7 +154,7 @@ export interface CashMovement {
   company_id: string;
   movement_no: string;
   account_id: string;
-  movement_type: 'income' | 'expense' | 'transfer_in' | 'transfer_out';
+  movement_type: 'IN' | 'OUT' | 'TRANSFER';
   amount: number;
   currency: string;
   exchange_rate: number;
@@ -336,7 +336,7 @@ export interface CashAccountFormData {
 
 export interface CashMovementFormData {
   account_id: string;
-  movement_type: 'income' | 'expense' | 'transfer_in' | 'transfer_out';
+  movement_type: 'IN' | 'OUT' | 'TRANSFER';
   amount: number;
   currency: string;
   exchange_rate: number;

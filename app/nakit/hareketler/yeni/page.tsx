@@ -17,7 +17,7 @@ export default function NewCashMovementPage() {
   
   const [formData, setFormData] = useState<CashMovementFormData>({
     account_id: '',
-    movement_type: 'income',
+    movement_type: 'IN',
     amount: 0,
     currency: 'TRY',
     exchange_rate: 1,
@@ -111,46 +111,32 @@ export default function NewCashMovementPage() {
       if (!userData?.company_id) throw new Error('Şirket bilgisi bulunamadı')
 
       // Transfer işlemi için kontrol
-      if (formData.movement_type === 'transfer_out' && !formData.target_account_id) {
+      if (formData.movement_type === 'TRANSFER' && !formData.target_account_id) {
         throw new Error('Transfer işlemi için hedef hesap seçmelisiniz')
       }
 
-      // Ana hareketi ekle
+      // Hareketi ekle
       const { error: insertError } = await supabase
         .from('cash_movements')
         .insert({
-          ...formData,
           movement_no: generateMovementNo(),
           company_id: userData.company_id,
+          account_id: formData.account_id,
+          movement_type: formData.movement_type,
+          amount: formData.amount,
+          currency: formData.currency,
+          exchange_rate: formData.exchange_rate,
+          description: formData.description,
+          category: formData.category || null,
+          payment_method: formData.payment_method,
+          document_no: formData.document_no || null,
+          movement_date: formData.movement_date,
           created_by: user.id,
           customer_id: formData.customer_id || null,
           target_account_id: formData.target_account_id || null
         })
 
       if (insertError) throw insertError
-
-      // Transfer işlemi ise karşı hareketi de oluştur
-      if (formData.movement_type === 'transfer_out' && formData.target_account_id) {
-        const { error: transferError } = await supabase
-          .from('cash_movements')
-          .insert({
-            movement_no: generateMovementNo(),
-            company_id: userData.company_id,
-            account_id: formData.target_account_id,
-            movement_type: 'transfer_in',
-            amount: formData.amount,
-            currency: formData.currency,
-            exchange_rate: formData.exchange_rate,
-            description: `Transfer: ${formData.description}`,
-            category: 'transfer',
-            payment_method: 'transfer',
-            document_no: formData.document_no,
-            movement_date: formData.movement_date,
-            created_by: user.id
-          })
-
-        if (transferError) throw transferError
-      }
 
       router.push('/nakit')
     } catch (err: any) {
@@ -217,9 +203,9 @@ export default function NewCashMovementPage() {
             <div className="grid grid-cols-3 gap-3">
               <button
                 type="button"
-                onClick={() => setFormData(prev => ({ ...prev, movement_type: 'income' }))}
+                onClick={() => setFormData(prev => ({ ...prev, movement_type: 'IN' }))}
                 className={`px-4 py-3 rounded-lg border-2 transition-all flex items-center gap-3 ${
-                  formData.movement_type === 'income'
+                  formData.movement_type === 'IN'
                     ? 'border-green-500 bg-green-50'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
@@ -233,9 +219,9 @@ export default function NewCashMovementPage() {
               
               <button
                 type="button"
-                onClick={() => setFormData(prev => ({ ...prev, movement_type: 'expense' }))}
+                onClick={() => setFormData(prev => ({ ...prev, movement_type: 'OUT' }))}
                 className={`px-4 py-3 rounded-lg border-2 transition-all flex items-center gap-3 ${
-                  formData.movement_type === 'expense'
+                  formData.movement_type === 'OUT'
                     ? 'border-red-500 bg-red-50'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
@@ -249,9 +235,9 @@ export default function NewCashMovementPage() {
               
               <button
                 type="button"
-                onClick={() => setFormData(prev => ({ ...prev, movement_type: 'transfer_out' }))}
+                onClick={() => setFormData(prev => ({ ...prev, movement_type: 'TRANSFER' }))}
                 className={`px-4 py-3 rounded-lg border-2 transition-all flex items-center gap-3 ${
-                  formData.movement_type === 'transfer_out'
+                  formData.movement_type === 'TRANSFER'
                     ? 'border-blue-500 bg-blue-50'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
@@ -280,10 +266,10 @@ export default function NewCashMovementPage() {
             />
           </div>
 
-          <div className={formData.movement_type === 'transfer_out' ? 'grid grid-cols-2 gap-4' : ''}>
+          <div className={formData.movement_type === 'TRANSFER' ? 'grid grid-cols-2 gap-4' : ''}>
             <div>
               <label htmlFor="account_id" className="block text-sm font-medium text-gray-700 mb-1">
-                {formData.movement_type === 'transfer_out' ? 'Kaynak Hesap *' : 'Hesap *'}
+                {formData.movement_type === 'TRANSFER' ? 'Kaynak Hesap *' : 'Hesap *'}
               </label>
               <select
                 id="account_id"
@@ -302,7 +288,7 @@ export default function NewCashMovementPage() {
               </select>
             </div>
 
-            {formData.movement_type === 'transfer_out' && (
+            {formData.movement_type === 'TRANSFER' && (
               <div>
                 <label htmlFor="target_account_id" className="block text-sm font-medium text-gray-700 mb-1">
                   Hedef Hesap *
@@ -312,7 +298,7 @@ export default function NewCashMovementPage() {
                   name="target_account_id"
                   value={formData.target_account_id}
                   onChange={handleChange}
-                  required={formData.movement_type === 'transfer_out'}
+                  required={formData.movement_type === 'TRANSFER'}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="">Seçiniz</option>
