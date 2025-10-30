@@ -91,7 +91,8 @@ export default function CekPage() {
           status,
           type,
           description,
-          customer:customers(name)
+          customer_id,
+          customers!customer_id(name)
         `)
         .eq('company_id', userData.company_id)
         .order('due_date', { ascending: true })
@@ -283,8 +284,11 @@ export default function CekPage() {
       header: 'Banka',
     },
     {
-      accessorKey: 'customer.name',
+      accessorKey: 'customers.name',
       header: 'Cari',
+      cell: ({ row }) => {
+        return row.original.customers?.name || '-';
+      },
     },
     {
       accessorKey: 'amount',
