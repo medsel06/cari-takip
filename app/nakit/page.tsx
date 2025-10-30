@@ -41,6 +41,8 @@ export default function CashPage() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
 
+      console.log('Current user ID:', user.id)
+
       const { data: userData } = await supabase
         .from('users')
         .select('company_id')
@@ -48,6 +50,8 @@ export default function CashPage() {
         .single()
 
       if (!userData?.company_id) return
+
+      console.log('User company_id:', userData.company_id)
 
       // Hesapları getir
       const { data: accountsData, error: accountsError } = await supabase
