@@ -113,12 +113,16 @@ export default function YeniGelirGiderPage() {
       setCategories(categoriesData || []);
 
       // Kasa/Banka hesaplarını getir
-      const { data: accountsData } = await supabase
+      const { data: accountsData, error: accountsError } = await supabase
         .from('cash_accounts')
         .select('*')
         .eq('company_id', userData.company_id)
         .eq('is_active', true)
-        .order('name');
+        .order('account_name');
+
+      if (accountsError) {
+        console.error('Hesaplar yüklenirken hata:', accountsError);
+      }
 
       setCashAccounts(accountsData || []);
 
@@ -469,7 +473,7 @@ export default function YeniGelirGiderPage() {
                       <option value="">Hesap seçin</option>
                       {cashAccounts.map(account => (
                         <option key={account.id} value={account.id}>
-                          {account.name} - {formatCurrency(account.balance)}
+                          {account.account_name} - {formatCurrency(account.balance)}
                         </option>
                       ))}
                     </select>
