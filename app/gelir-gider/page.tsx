@@ -58,7 +58,7 @@ interface CashMovement {
   id: string;
   movement_no: string;
   account_id: string | null;
-  movement_type: 'income' | 'expense';
+  movement_type: 'IN' | 'OUT';
   amount: string;
   currency: string;
   description: string;
@@ -76,9 +76,7 @@ interface CashMovement {
   } | null;
   cash_accounts?: {
     id: string;
-    name: string;
-    account_type: string;
-    currency: string;
+    account_name: string;
   } | null;
 }
 
@@ -184,33 +182,41 @@ export default function GelirGiderPage() {
 
       if (!userData?.company_id) return;
 
-      // income_expenses tablosundan veri çek
+      // cash_movements tablosundan gelir-gider kayıtlarını çek
       let query = supabase
-        .from('income_expenses')
+        .from('cash_movements')
         .select(`
           id,
-          type,
-          category_id,
+          movement_no,
+          movement_type,
+          category,
           amount,
           description,
-          transaction_date,
+          movement_date,
           payment_method,
-          payment_status,
+          account_id,
           customer_id,
           created_at,
           customers!customer_id (
             id,
             name,
             code
+          ),
+          cash_accounts!account_id (
+            id,
+            account_name
           )
         `)
         .eq('company_id', userData.company_id)
-        .order('transaction_date', { ascending: false })
+        .in('movement_type', ['IN', 'OUT']) // Sadece gelir-gider kayıtları (TRANSFER hariç)
+        .order('movement_date', { ascending: false })
         .limit(200);
 
       // Tip filtresi
-      if (filter !== 'all') {
-        query = query.eq('movement_type', filter);
+      if (filter === 'income') {
+        query = query.eq('movement_type', 'IN');
+      } else if (filter === 'expense') {
+        query = query.eq('movement_type', 'OUT');
       }
 
       // Ödeme durumu filtresi - account_id var mı yok mu kontrolü
@@ -259,9 +265,9 @@ export default function GelirGiderPage() {
       if (accountIds.length > 0) {
         const { data: accountsData } = await supabase
           .from('cash_accounts')
-          .select('id, name, account_type, currency')
+          .select('id, account_name, account_type, currency')
           .in('id', accountIds);
-        
+
         accountsMap = (accountsData || []).reduce((acc, account) => {
           acc[account.id] = account;
           return acc;
@@ -272,13 +278,13 @@ export default function GelirGiderPage() {
       // Veriyi dönüştür - profesyonel mapping
       const transformedData: TransformedIncomeExpense[] = (data || []).map((item: CashMovement) => ({
         id: item.id,
-        type: item.movement_type,
+        type: item.movement_type === 'IN' ? 'income' : 'expense',
         movement_no: item.movement_no,
         category_id: item.category || '',
         category: {
           id: item.category || '',
           name: categories[item.category || ''] || getCategoryName(item.category),
-          type: item.movement_type
+          type: item.movement_type === 'IN' ? 'income' : 'expense'
         },
         amount: parseFloat(item.amount),
         currency: item.currency,
