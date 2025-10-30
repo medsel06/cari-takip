@@ -11,9 +11,14 @@ const path = require('path');
 
 // .env dosyasını oku (varsa)
 try {
-  require('dotenv').config();
+  require('dotenv').config({ path: '.env.local' });
 } catch (err) {
-  console.log('⚠️  dotenv bulunamadı, environment variables kullanılacak');
+  // .env.local yoksa .env dene
+  try {
+    require('dotenv').config();
+  } catch (err2) {
+    console.log('⚠️  dotenv bulunamadı, environment variables kullanılacak');
+  }
 }
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
