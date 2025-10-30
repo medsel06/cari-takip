@@ -152,8 +152,17 @@ export default function TahsilatOdemePage() {
       'check': 'Çek',
       'credit_card': 'Kredi Kartı'
     }[formData.payment_method];
-    
+
     return `${method} ${type}`;
+  };
+
+  const generateMovementNo = () => {
+    const date = new Date()
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0')
+    return `NH-${year}${month}${day}-${random}`
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -328,13 +337,19 @@ export default function TahsilatOdemePage() {
           const { error: cashError } = await supabase
             .from('cash_movements')
             .insert([{
+              movement_no: generateMovementNo(),
               company_id: userData.company_id,
               account_id: defaultAccount.id,
               customer_id: formData.customer_id,
               movement_type: movementType,
               amount: formData.amount,
+              currency: 'TRY',
+              exchange_rate: 1,
               description: description,
-              transaction_date: new Date().toISOString().split('T')[0],
+              category: movementType === 'income' ? 'customer_collection' : 'customer_payment',
+              payment_method: formData.payment_method,
+              document_no: documentNo,
+              movement_date: new Date().toISOString().split('T')[0],
               created_by: user.id
             }]);
 
