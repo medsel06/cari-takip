@@ -11,7 +11,7 @@ import {
   TrendingDown
 } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/utils';
-import { toast } from 'react-hot-toast';
+import { toast } from 'sonner';
 
 // Kategori kodundan Türkçe isim üretme fonksiyonu
 const getCategoryName = (categoryCode: string | null): string => {
