@@ -37,11 +37,11 @@ const UpcomingChecksWidget = () => {
       fiveDaysLater.setDate(fiveDaysLater.getDate() + 5);
       const fiveDaysLaterStr = fiveDaysLater.toISOString().split('T')[0];
 
-      const { data: checksData } = await supabase
+      const { data: checksData, error: checksError } = await supabase
         .from('checks')
         .select(`
           *,
-          customer:customers(name, phone)
+          customers!customer_id(name, phone)
         `)
         .eq('company_id', userData.company_id)
         .in('status', ['portfolio', 'in_bank']) // Portföyde veya bankada olan çekler
@@ -49,6 +49,10 @@ const UpcomingChecksWidget = () => {
         .lte('due_date', fiveDaysLaterStr)
         .order('due_date', { ascending: true })
         .limit(5);
+
+      if (checksError) {
+        console.error('Çekler yüklenirken hata:', checksError);
+      }
 
       setChecks(checksData || []);
     } catch (error) {
@@ -147,7 +151,7 @@ const UpcomingChecksWidget = () => {
                             </span>
                           </div>
                           <p className="text-xs text-gray-500">
-                            {check.customer?.name || 'Belirtilmemiş'} • {check.bank_name}
+                            {check.customers?.name || 'Belirtilmemiş'} • {check.bank_name}
                           </p>
                         </div>
                       </div>
@@ -211,7 +215,7 @@ const UpcomingChecksWidget = () => {
               </div>
               <div className="flex justify-between py-2 border-b">
                 <span className="text-gray-600">Cari:</span>
-                <span className="font-medium">{selectedCheck.customer?.name || '-'}</span>
+                <span className="font-medium">{selectedCheck.customers?.name || '-'}</span>
               </div>
               <div className="flex justify-between py-2 border-b">
                 <span className="text-gray-600">Banka:</span>
