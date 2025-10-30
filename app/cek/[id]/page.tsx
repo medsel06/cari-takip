@@ -47,16 +47,16 @@ export default function CekDetayPage() {
         .from('checks')
         .select(`
           *,
-          customer:customers(*)
+          customers!customer_id(*)
         `)
         .eq('id', params.id)
         .single();
 
       if (error) throw error;
-      
+
       setCheck(checkData);
-      if (checkData.customer) {
-        setCustomer(checkData.customer);
+      if (checkData.customers) {
+        setCustomer(checkData.customers);
       }
     } catch (error) {
       console.error('Error fetching check:', error);
