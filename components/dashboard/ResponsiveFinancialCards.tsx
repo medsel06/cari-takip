@@ -22,7 +22,7 @@ export const ResponsiveCashSummary = ({ cashAccounts }: { cashAccounts: any[] })
 
       {/* Total Amount */}
       <div className="mb-4">
-        <p className="amount-large-responsive amount-neutral">
+        <p className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white break-words">
           {totalCash.toLocaleString('tr-TR')} ₺
         </p>
         <p className="subheading-responsive mt-1">Toplam nakit varlık</p>
@@ -78,8 +78,8 @@ export const ResponsiveIncomeExpenseSummary = ({ incomeExpenseData }: { incomeEx
 
       {/* Net Amount */}
       <div className="mb-4">
-        <p className={`text-2xl lg:text-3xl font-bold break-words ${
-          net >= 0 ? 'text-green-600' : 'text-red-600'
+        <p className={`text-xl lg:text-2xl font-bold break-words ${
+          net >= 0 ? 'text-gray-900 dark:text-white' : 'text-gray-900 dark:text-white'
         }`}>
           {net >= 0 ? '+' : ''}{Math.abs(net).toLocaleString('tr-TR')} ₺
         </p>

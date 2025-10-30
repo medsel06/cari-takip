@@ -60,7 +60,7 @@ export const ResponsiveReceivableSummary = ({ receivables }: { receivables: any[
       
       {/* Total Amount */}
       <div className="mb-4">
-        <p className="text-2xl lg:text-3xl font-bold text-green-600 break-words">
+        <p className="text-xl lg:text-2xl font-bold text-green-600 break-words">
           {totalReceivable.toLocaleString('tr-TR')} ₺
         </p>
         <p className="text-xs lg:text-sm text-gray-500 mt-1">
@@ -114,7 +114,7 @@ export const ResponsiveDebtSummary = ({ debts }: { debts: any[] }) => {
       
       {/* Total Amount */}
       <div className="mb-4">
-        <p className="text-2xl lg:text-3xl font-bold text-red-600 break-words">
+        <p className="text-xl lg:text-2xl font-bold text-red-600 break-words">
           {totalDebt.toLocaleString('tr-TR')} ₺
         </p>
         <p className="text-xs lg:text-sm text-gray-500 mt-1">
