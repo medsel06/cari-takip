@@ -213,18 +213,29 @@ export default function YeniGelirGiderPage() {
 
       // Eğer ödendi ise bakiyeyi güncelle
       if (formData.payment_status === 'paid' && formData.cash_account_id) {
-        const { error: updateError } = await supabase
+        // Önce mevcut bakiyeyi al
+        const { data: accountData } = await supabase
           .from('cash_accounts')
-          .update({ 
-            balance: type === 'income' 
-              ? supabase.raw('balance + ?', [formData.amount])
-              : supabase.raw('balance - ?', [formData.amount]),
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', formData.cash_account_id);
+          .select('balance')
+          .eq('id', formData.cash_account_id)
+          .single();
 
-        if (updateError) {
-          console.error('Bakiye güncellenirken hata:', updateError);
+        if (accountData) {
+          const newBalance = type === 'income'
+            ? accountData.balance + formData.amount
+            : accountData.balance - formData.amount;
+
+          const { error: updateError } = await supabase
+            .from('cash_accounts')
+            .update({
+              balance: newBalance,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', formData.cash_account_id);
+
+          if (updateError) {
+            console.error('Bakiye güncellenirken hata:', updateError);
+          }
         }
       }
 
