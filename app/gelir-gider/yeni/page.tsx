@@ -192,16 +192,15 @@ export default function YeniGelirGiderPage() {
           company_id: userData.company_id,
           movement_no: movementNo,
           account_id: formData.payment_status === 'paid' && formData.cash_account_id ? formData.cash_account_id : null,
-          movement_type: type, // 'income' veya 'expense'
+          movement_type: type === 'income' ? 'IN' : 'OUT', // IN veya OUT
           amount: formData.amount,
           currency: 'TRY',
           exchange_rate: 1,
           description: formData.description || '',
           category: categoryCode, // Kategori KODU (KIRA, ELEKTRIK vs)
-          reference_type: null,
-          reference_id: null,
+          related_document_type: null,
+          related_document_id: null,
           customer_id: formData.customer_id && formData.customer_id.trim() !== '' ? formData.customer_id : null,
-          target_account_id: null,
           payment_method: formData.payment_status === 'paid' ? formData.payment_method : null,
           document_no: formData.document_no || '',
           movement_date: formData.transaction_date,
