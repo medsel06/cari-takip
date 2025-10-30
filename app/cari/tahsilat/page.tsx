@@ -3,15 +3,16 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
-import { 
-  ArrowLeft, 
+import {
+  ArrowLeft,
   Plus,
   Search,
   Filter,
   Calendar,
   DollarSign,
   Eye,
-  Trash2
+  Trash2,
+  Edit
 } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/utils';
 
@@ -239,28 +240,28 @@ export default function TahsilatListePage() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-secondary">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">
+                <th className="px-2 py-1.5 text-left text-xs font-semibold uppercase tracking-wider">
                   Tarih
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">
+                <th className="px-2 py-1.5 text-left text-xs font-semibold uppercase tracking-wider">
                   Belge No
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">
+                <th className="px-2 py-1.5 text-left text-xs font-semibold uppercase tracking-wider">
                   İşlem Tipi
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">
+                <th className="px-2 py-1.5 text-left text-xs font-semibold uppercase tracking-wider">
                   Cari
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">
+                <th className="px-2 py-1.5 text-left text-xs font-semibold uppercase tracking-wider">
                   Ödeme Yöntemi
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">
+                <th className="px-2 py-1.5 text-left text-xs font-semibold uppercase tracking-wider">
                   Açıklama
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wider">
+                <th className="px-2 py-1.5 text-right text-xs font-semibold uppercase tracking-wider">
                   Tutar
                 </th>
-                <th className="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider">
+                <th className="px-2 py-1.5 text-center text-xs font-semibold uppercase tracking-wider">
                   İşlemler
                 </th>
               </tr>
@@ -268,42 +269,42 @@ export default function TahsilatListePage() {
             <tbody className="divide-y">
               {filteredMovements.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-6 py-12 text-center text-muted-foreground">
+                  <td colSpan={8} className="px-2 py-6 text-center text-muted-foreground text-sm">
                     Kayıt bulunamadı
                   </td>
                 </tr>
               ) : (
                 filteredMovements.map((movement) => (
                   <tr key={movement.id} className="hover:bg-secondary transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <td className="px-2 py-2 whitespace-nowrap text-xs">
                       {formatDate(movement.due_date || movement.created_at)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <td className="px-2 py-2 whitespace-nowrap text-xs">
                       {movement.document_no || '-'}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                    <td className="px-2 py-2 whitespace-nowrap">
+                      <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium ${
                         movement.movement_type === 'CREDIT'
                           ? 'bg-green-100 text-green-800'
                           : 'bg-blue-100 text-blue-800'
                       }`}>
-                        <DollarSign className="h-3 w-3 mr-1" />
+                        <DollarSign className="h-3 w-3 mr-0.5" />
                         {movement.movement_type === 'CREDIT' ? 'Tahsilat' : 'Ödeme'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-2 py-2 whitespace-nowrap">
                       <button
                         onClick={() => window.location.href = `/firma-detay?customer_id=${movement.customer?.id}`}
                         className="w-full text-left hover:underline"
                       >
-                        <div className="text-sm font-medium cursor-pointer">{movement.customer?.name}</div>
+                        <div className="text-xs font-medium cursor-pointer">{movement.customer?.name}</div>
                         <div className="text-xs text-muted-foreground">{movement.customer?.code}</div>
                       </button>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <td className="px-2 py-2 whitespace-nowrap text-xs">
                       {getPaymentMethodLabel(movement.payment_method || 'cash')}
                     </td>
-                    <td className="px-6 py-4 text-sm">
+                    <td className="px-2 py-2 text-xs">
                       <button
                         onClick={() => {
                           // Çek içeren bir kayıtsa çek detayına yönlendir
@@ -325,26 +326,35 @@ export default function TahsilatListePage() {
                         </div>
                       </button>
                     </td>
-                    <td className={`px-6 py-4 whitespace-nowrap text-sm font-semibold text-right ${
+                    <td className={`px-2 py-2 whitespace-nowrap text-xs font-semibold text-right ${
                       movement.movement_type === 'CREDIT' ? 'text-green-600' : 'text-blue-600'
                     }`}>
                       {formatCurrency(movement.amount)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center">
-                      <Link
-                        href={`/firma-detay?customer_id=${movement.customer_id || movement.customer?.id}`}
-                        className="text-blue-600 hover:text-blue-900 mr-3"
-                        title="Cari Detay"
-                      >
-                        <Eye className="h-5 w-5" />
-                      </Link>
-                      <button
-                        onClick={() => handleDelete(movement.id)}
-                        className="text-red-600 hover:text-red-900"
-                        title="Sil"
-                      >
-                        <Trash2 className="h-5 w-5" />
-                      </button>
+                    <td className="px-2 py-2 whitespace-nowrap">
+                      <div className="flex items-center justify-center gap-1.5">
+                        <Link
+                          href={`/cari/tahsilat/${movement.id}/duzenle`}
+                          className="inline-flex items-center justify-center p-1 rounded hover:bg-blue-50 text-blue-600 hover:text-blue-900 transition-colors"
+                          title="Düzenle"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Link>
+                        <Link
+                          href={`/firma-detay?customer_id=${movement.customer_id || movement.customer?.id}`}
+                          className="inline-flex items-center justify-center p-1 rounded hover:bg-green-50 text-green-600 hover:text-green-900 transition-colors"
+                          title="Cari Detay"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(movement.id)}
+                          className="inline-flex items-center justify-center p-1 rounded hover:bg-red-50 text-red-600 hover:text-red-900 transition-colors"
+                          title="Sil"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
