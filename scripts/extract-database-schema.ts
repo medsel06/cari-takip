@@ -5,11 +5,11 @@
  * - Tablolar ve sütunlar
  * - Foreign key ilişkileri
  * - İndeksler
- * - RLS Policy'leri
+ * - RLS Policyleri
  * - Fonksiyonlar
- * - Trigger'lar
- * - View'lar
- * - Enum'lar
+ * - Triggerlar
+ * - Viewlar
+ * - Enumlar
  */
 
 import { createClient } from '@supabase/supabase-js';
@@ -103,7 +103,7 @@ async function getColumns() {
 }
 
 async function getForeignKeys() {
-  console.log('🔗 Foreign key'ler çekiliyor...');
+  console.log('🔗 Foreign keyler çekiliyor...');
 
   const query = `
     SELECT
@@ -147,7 +147,7 @@ async function getIndexes() {
 }
 
 async function getPolicies() {
-  console.log('🔒 RLS Policy'ler çekiliyor...');
+  console.log('🔒 RLS Policyleri çekiliyor...');
 
   const query = `
     SELECT
@@ -190,7 +190,7 @@ async function getFunctions() {
 }
 
 async function getTriggers() {
-  console.log('🎯 Trigger'lar çekiliyor...');
+  console.log('🎯 Triggerlar çekiliyor...');
 
   const query = `
     SELECT
@@ -209,7 +209,7 @@ async function getTriggers() {
 }
 
 async function getViews() {
-  console.log('👁️  View'lar çekiliyor...');
+  console.log('👁️  Viewlar çekiliyor...');
 
   const query = `
     SELECT
@@ -225,7 +225,7 @@ async function getViews() {
 }
 
 async function getEnums() {
-  console.log('📋 Enum'lar çekiliyor...');
+  console.log('📋 Enumlar çekiliyor...');
 
   const query = `
     SELECT
@@ -244,7 +244,7 @@ async function getEnums() {
 }
 
 async function getSequences() {
-  console.log('🔢 Sequence'lar çekiliyor...');
+  console.log('🔢 Sequencelar çekiliyor...');
 
   const query = `
     SELECT
@@ -328,11 +328,11 @@ function generateMarkdown(schemaInfo: SchemaInfo): string {
   md += '- [Tablolar](#tablolar)\n';
   md += '- [Foreign Key İlişkileri](#foreign-key-ilişkileri)\n';
   md += '- [İndeksler](#indeksler)\n';
-  md += '- [RLS Policy\'leri](#rls-policyleri)\n';
+  md += '- [RLS Policyleri](#rls-policyleri)\n';
   md += '- [Fonksiyonlar](#fonksiyonlar)\n';
-  md += '- [Trigger\'lar](#triggerlar)\n';
-  md += '- [View\'lar](#viewlar)\n';
-  md += '- [Enum\'lar](#enumlar)\n\n';
+  md += '- [Triggerlar](#triggerlar)\n';
+  md += '- [Viewlar](#viewlar)\n';
+  md += '- [Enumlar](#enumlar)\n\n';
 
   // Tablolar
   md += '## Tablolar\n\n';
@@ -386,7 +386,7 @@ function generateMarkdown(schemaInfo: SchemaInfo): string {
   }
 
   // RLS Policies
-  md += '## RLS Policy\'leri\n\n';
+  md += '## RLS Policyleri\n\n';
   if (schemaInfo.policies.length > 0) {
     schemaInfo.policies.forEach(policy => {
       md += `### ${policy.policy_name}\n`;
